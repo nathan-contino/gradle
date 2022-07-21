@@ -143,10 +143,7 @@ public abstract class Node {
         NodeGroup newGroup = group;
         for (Node predecessor : getDependencyPredecessors()) {
             if (predecessor.getGroup() instanceof HasFinalizers) {
-                HasFinalizers newGroupWithFinalizers = maybeInheritGroupAsFinalizerDependency((HasFinalizers) predecessor.getGroup(), newGroup);
-                // The first finalizer group to reach here would "own" this node if it isn't part of some ordinal group already.
-                newGroupWithFinalizers.maybeAddToOwnedMembers(this);
-                newGroup = newGroupWithFinalizers;
+                newGroup = maybeInheritGroupAsFinalizerDependency((HasFinalizers) predecessor.getGroup(), newGroup);
             }
         }
         if (newGroup != group) {
@@ -164,7 +161,7 @@ public abstract class Node {
         }
 
         HasFinalizers currentFinalizers = (HasFinalizers) current;
-        if (currentFinalizers.getFinalizerGroups().containsAll(finalizers.getFinalizerGroups())) {
+        if (currentFinalizers.isReachableFromEntryPoint() == finalizers.isReachableFromEntryPoint() && currentFinalizers.getFinalizerGroups().containsAll(finalizers.getFinalizerGroups())) {
             return currentFinalizers;
         }
 
@@ -477,7 +474,7 @@ public abstract class Node {
 
     @OverridingMethodsMustInvokeSuper
     public Iterable<Node> getAllSuccessors() {
-        return dependencySuccessors;
+        return getHardSuccessors();
     }
 
     /**
@@ -507,11 +504,29 @@ public abstract class Node {
     }
 
     /**
-     * Returns a node that should be executed prior to this node, once this node is ready to execute and it dependencies complete.
+     * Visits the "pre-execution" nodes of this node. These nodes should be treated as though they are dependencies of this node.
+     * This method is called when this node is ready to execute and its other dependencies are complete,
+     * allowing some dependencies of this node to be defined dynamically.
+     *
+     * <p>Note: there is currently no cycle detection applied to these dynamically added nodes or their dependencies.
+     * Support for this is not implemented yet and will be added later.
      */
-    @Nullable
-    public Node getPrepareNode() {
-        return null;
+    public void visitPreExecutionNodes(Consumer<? super Node> visitor) {
+    }
+
+    /**
+     * Visits the "post-execution" nodes of this node. These nodes should be treated as though they also produce the outputs or
+     * results of this node. That is, all nodes that depend on this node should also depend on these nodes. This method is called when
+     * this node has executed successfully and before any of its dependents are started, allowing some work of this node to be dynamically split
+     * up into other nodes that can run in parallel or with different resource requirements.
+     *
+     * <p>Note: there is currently no cycle detection applied to these dynamically added nodes or their dependencies.
+     * Support for this is not implemented yet and will be added later.
+     *
+     * <p>Note: mustRunAfter or finalizedBy relationship on this node is not honored for these dynamically added nodes or their dependencies.
+     * Support for this is not implemented yet and will be added later.
+     */
+    public void visitPostExecutionNodes(Consumer<? super Node> visitor) {
     }
 
     public MutationInfo getMutationInfo() {
