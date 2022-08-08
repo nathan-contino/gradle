@@ -1,9 +1,8 @@
-
 The Gradle team is excited to announce Gradle @version@.
 
 This release features [1](), [2](), ... [n](), and more.
 
-<!--
+<!-- 
 Include only their name, impactful features should be called out separately below.
  [Some person](https://github.com/some-person)
 
@@ -36,7 +35,6 @@ We would like to thank the following community members for their contributions t
 [Xin Wang](https://github.com/scaventz),
 [Craig Andrews](https://github.com/candrews)
 
-
 ## Upgrade instructions
 
 Switch your build to use Gradle @version@ by updating your wrapper:
@@ -45,7 +43,9 @@ Switch your build to use Gradle @version@ by updating your wrapper:
 
 See the [Gradle 7.x upgrade guide](userguide/upgrading_version_7.html#changes_@baseVersion@) to learn about deprecations, breaking changes and other considerations when upgrading to Gradle @version@.
 
-For Java, Groovy, Kotlin and Android compatibility, see the [full compatibility notes](userguide/compatibility.html).
+For Java, Groovy, Kotlin and Android compatibility, see the [full compatibility notes](userguide/compatibility.html).   
+
+## New features and usability improvements
 
 <!-- Do not add breaking changes or deprecations here! Add them to the upgrade guide instead. -->
 
@@ -308,8 +308,6 @@ testLauncher.withTestsFor(spec -> {
 
 
 
-
-
 <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ADD RELEASE FEATURES ABOVE
 ==========================================================
@@ -321,19 +319,6 @@ Promoted features are features that were incubating in previous versions of Grad
 See the User Manual section on the “[Feature Lifecycle](userguide/feature_lifecycle.html)” for more information.
 
 The following are the features that have been promoted in this Gradle release.
-
-### Replacement collections in `org.gradle.plugins.ide.idea.model.IdeaModule`
-
-The `testResourcesDirs` and `testSourcesDirs` fields, and their getters and setters are now `@Deprecated`.
-Any usages of these elements should be replaced by the now stable `getTestSources()` and `getTestResources()` methods and their respective setters.
-These new methods return and are backed by `ConfigurableFileCollection` instances for improved flexibility in how these collections of files can be used.
-Gradle now warns upon usage of these deprecated methods that they will be removed in Gradle 8.0.
-
-### Replacement methods in `org.gradle.api.tasks.testing.TestReport`
-
-The `getDestinationDir()`, `setDestinationDir(File)`, and `getTestResultsDirs()` and `setTestResultsDirs(Iterable)` methods are now `@Deprecated`.
-Any usages of them should be replaced by the now stable `getDestinationDirectory()` and `getTestResults()` methods and their associated setters.
-These deprecated elements will be removed in Gradle 8.0.
 
 <!--
 ### Example promoted
